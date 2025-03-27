@@ -1,0 +1,47 @@
+.singup, .singupButten{
+    text-align: center;
+    background-color: #fff;
+    box-shadow: 0 0 10px;
+    border-radius: 10px;
+    height: 470px;
+    width: 400px;
+    margin: 5%;
+    padding: 10px;
+    font-size: 20px;
+    margin-left: 500px;
+    margin-right: 500px;
+}
+.goToLogin{
+    margin-top: 20px;
+}
+
+body{
+    background-color: #eee;
+}
+.singupButten{
+    background-color:  #33adff ;
+    width: 270px;    
+    height: 35px;
+    padding: 5px;
+    box-shadow: 0 0 0;
+    margin-left: 65px;
+
+}
+#sing-name{
+    margin-right: 150px;
+}
+#sing-email{
+    margin-right: 150px;
+}
+#sing-password{
+    margin-right: 127px;
+}
+#name{
+    font-size: medium;
+}
+#email{
+    font-size: medium;
+}
+#password{
+    font-size: medium;
+}

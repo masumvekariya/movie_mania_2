@@ -1,0 +1,59 @@
+.login-form{
+    background-color: #fff;
+    text-align: center;
+    margin: 5%;
+    font-size: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px;
+    height: 510px;
+    width: 480px;
+    margin-left: 500px;
+    margin-right: 500px;
+    padding: 10px;
+
+    
+
+}
+body{
+    background-color:#eee;
+}
+#sign-q{
+   
+    margin-top: -20px;
+}
+#login-DI{
+    margin-right: 153px;
+}
+#login-di{
+    margin-right: 120px;
+}
+#login-img{
+    margin-top: 30px;
+}
+#password{
+    font-size: medium;
+}
+#email{
+    font-size: medium;
+
+}
+.login-button{
+    background-color:  #33adff ;
+    width: 270px;    
+    height: 35px;
+    text-align: center;
+    padding: 5px;
+    box-shadow: 0 0 0;
+    font-size: 20px;
+    border-radius: 10px;
+
+}
+.forgot-password{
+    padding: 20px;
+}
+.login-link{
+    color: #076db0;
+}
+#login-remember{
+    margin-right: 150px;
+}
