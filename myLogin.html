@@ -3,46 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login to Movie Mania</title>
-    <link rel="icon" type="image/x-icon" href="https://storage.googleapis.com/a1aa/image/FLSrj5GhDK0OxY0GwMyU3VjN1ZFh6LG_D20W6UZXp4s.jpg">
-    <link rel="stylesheet" href="mylogin.css">
+    <title>Login - Movie Mania</title>
+    <link href="/public/css/styles.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    
-    <div class="login-form">
-        <img id="login-img"
-        alt="Movie mania logo "
-        src="https://storage.googleapis.com/a1aa/image/FLSrj5GhDK0OxY0GwMyU3VjN1ZFh6LG_D20W6UZXp4s.jpg"
-        height="100"
-        width="100"/>
-        <h2>
-            Login to Movie mania 
-        </h2>
-        <br>
-        <form class="login-f">
-            <div>
-                <label for="email" id="login-DI">Email  </label>
-                <br>
-                <input type="email" id="email" class="login-d" placeholder="enter your email" required/>
-                <br>
-                <br>
-                <label for="password" id="login-di">Password</label>
-                <br>
-                <input type="password" id="password" class="login-d" placeholder="enter your password" required/>
-                <br> <br>
-            </div>
-            <br><br>
-            <button type="submit" class="login-button" >Login</button>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
+    <header class="fixed w-full bg-black bg-opacity-90 backdrop-blur-md z-50 top-0">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-red-600">Movie Mania</h1>
+            <a href="Index.html" class="nav-link hover:text-red-600 transition-colors duration-300">Back to Home</a>
+        </div>
+    </header>
 
-            <!-- <article class="forgot-password">
-                <input type="checkbox" id="remember" />
-                <label for="remember" id="login-remember">Remember me</label>                
-                <a href=" " class="login-link"> forgot password?</a>
-            </article> -->
-        </form>
-        <br><br><br><br>
-        <p id="sign-q">Don't have an account? <a href="singUpPage.html" class="login-link">Sign up</a></p>
+    <div class="container mx-auto px-4">
+        <div class="max-w-md mx-auto bg-black bg-opacity-50 backdrop-blur-md p-8 rounded-xl shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
+            <h2 class="text-3xl font-bold text-center mb-8 text-red-600">Login</h2>
+            <form class="space-y-6">
+                <div class="relative">
+                    <input type="text" required
+                        class="w-full bg-transparent border-b-2 border-gray-600 px-4 py-2 text-white focus:outline-none focus:border-red-600 transition-colors duration-300"
+                        placeholder="Username">
+                </div>
+                <div class="relative">
+                    <input type="password" required
+                        class="w-full bg-transparent border-b-2 border-gray-600 px-4 py-2 text-white focus:outline-none focus:border-red-600 transition-colors duration-300"
+                        placeholder="Password">
+                </div>
+                <button type="submit"
+                    class="w-full bg-red-600 text-white py-3 rounded-md hover:bg-red-700 transform hover:scale-105 transition-all duration-300">
+                    Login
+                </button>
+            </form>
+            <p class="text-center mt-6 text-gray-400">Don't have an account? 
+                <a href="singUpPage.html" class="text-red-600 hover:text-red-400 transition-colors duration-300">Sign up</a>
+            </p>
+        </div>
     </div>
-
 </body>
 </html>

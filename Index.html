@@ -4,55 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie Mania</title>
-    <link rel="stylesheet" href="homePage.css">
+    <link href="/public/css/styles.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <header>
-        <div class="logo">
-            <h1>Movie Mania</h1>
+<body class="bg-gray-900 text-white">
+    <header class="fixed w-full bg-black bg-opacity-90 backdrop-blur-md z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="logo">
+                <h1 class="text-2xl font-bold text-red-600">Movie Mania</h1>
+            </div>
+            <nav>
+                <ul class="flex space-x-8">
+                    <li><a href="#home" class="nav-link">Home</a></li>
+                    <li><a href="#movies" class="nav-link">Movies</a></li>
+                    <li><a href="About.html" class="nav-link">About Us</a></li>
+                    <li><a href="myLogin.html" class="nav-link">Contact</a></li>
+                </ul>
+            </nav>
         </div>
-        <nav>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#movies">Movies</a></li>
-                <li><a href="About.html">About Us</a></li>
-                <li><a href="myLogin.html">Contact</a></li>
-            </ul>
-        </nav>
     </header>
 
-    <main>
+    <main class="pt-16">
         <section class="hero">
-            <h2>Welcome to Movie Mania</h2>
-            <p>Your favorite movies, all in one place!</p>
+            <h2 class="text-5xl font-bold mb-4">Welcome to Movie Mania</h2>
+            <p class="text-xl text-gray-300 mb-8">Your favorite movies, all in one place!</p>
             <a href="#movies" class="btn">Browse Movies</a>
         </section>
 
         <section id="movies" class="featured-movies">
-            <h2>Featured Movies</h2>
+            <h2 class="text-3xl font-bold text-center mb-8">Featured Movies</h2>
             <div class="movie-list">
                 <div class="movie">
-                    <img src="movie1.jpg" alt="Movie 1">
-                    <h3>Movie Title 1</h3>
+                    <img src="https://source.unsplash.com/800x600/?movie,cinema" alt="Movie 1">
+                    <h3>The Dark Knight</h3>
                 </div>
                 <div class="movie">
-                    <img src="movie2.jpg" alt="Movie 2">
-                    <h3>Movie Title 2</h3>
+                    <img src="https://source.unsplash.com/800x600/?film,action" alt="Movie 2">
+                    <h3>Inception</h3>
                 </div>
                 <div class="movie">
-                    <img src="movie3.jpg" alt="Movie 3">
-                    <h3>Movie Title 3</h3>
+                    <img src="https://source.unsplash.com/800x600/?movie,drama" alt="Movie 3">
+                    <h3>Interstellar</h3>
                 </div>
                 <div class="movie">
-                    <img src="movie4.jpg" alt="Movie 4">
-                    <h3>Movie Title 4</h3>
+                    <img src="https://source.unsplash.com/800x600/?cinema,thriller" alt="Movie 4">
+                    <h3>Pulp Fiction</h3>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer>
-        <p>&copy; 2023 Movie Mania. All rights reserved.</p>
+    <footer class="bg-black py-8 mt-12">
+        <p class="text-center text-gray-400">&copy; 2023 Movie Mania. All rights reserved.</p>
     </footer>
 </body>
 </html>

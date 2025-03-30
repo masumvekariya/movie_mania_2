@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Mania</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-black text-white font-sans min-h-screen">
+    <header class="fixed w-full bg-[rgba(17,25,40,0.75)] backdrop-blur-md z-50 border-b border-[rgba(255,255,255,0.125)] shadow-xl">
+        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl font-bold text-accent">🎬</span>
+                <h1 class="text-2xl font-bold">Movie Mania</h1>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="#" class="hover:text-accent transition-colors">Home</a>
+                <a href="#movies" class="hover:text-accent transition-colors">Movies</a>
+                <a href="#series" class="hover:text-accent transition-colors">TV Series</a>
+                <a href="/about" class="hover:text-accent transition-colors">About</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input type="search" placeholder="Search movies..." class="bg-[rgba(17,25,40,0.75)] backdrop-blur-md px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 w-full md:w-64 border border-[rgba(255,255,255,0.125)] transition-all duration-300 hover:border-red-500">
+                </div>
+                <a href="/login" class="bg-red-600 hover:bg-red-700 px-6 py-2 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-red-500/50">Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="pt-20">
+        <!-- Hero Section -->
+        <section class="relative h-[70vh] flex items-center justify-center overflow-hidden bg-[linear-gradient(135deg,#1a1c20_0%,#0f1012_100%)] before:content-[''] before:absolute before:w-[150%] before:h-[150%] before:bg-[radial-gradient(circle,rgba(255,0,0,0.1)_0%,rgba(0,0,0,0)_70%)] before:animate-pulse">
+            <div class="container mx-auto px-4 text-center">
+                <h2 class="text-4xl md:text-6xl font-bold mb-4">Welcome to Movie Mania</h2>
+                <p class="text-xl text-gray-300 mb-8">Your gateway to endless entertainment</p>
+                <button class="bg-accent text-primary hover:bg-yellow-600 px-8 py-3 rounded-full font-semibold transition-colors">Explore Now</button>
+            </div>
+        </section>
+
+        <!-- Trending Movies Section -->
+        <section id="movies" class="py-16 bg-primary">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold mb-8">Trending Movies</h2>
+                <div id="trending-movies" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- Movie cards will be dynamically inserted here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Popular Series Section -->
+        <section id="series" class="py-16 bg-gray-900">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold mb-8">Popular TV Series</h2>
+                <div id="popular-series" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- Series cards will be dynamically inserted here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-primary py-8 border-t border-gray-800">
+        <div class="container mx-auto px-4 text-center text-gray-400">
+            <p>&copy; 2023 Movie Mania. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>

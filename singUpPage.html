@@ -3,57 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sing up to Movie Mania</title>
-    <link rel="icon" type="image/x-icon" href="https://storage.googleapis.com/a1aa/image/FLSrj5GhDK0OxY0GwMyU3VjN1ZFh6LG_D20W6UZXp4s.jpg">
-    <link rel="stylesheet" href="singUp.css"/>
-
+    <title>Sign Up - Movie Mania</title>
+    <link href="/public/css/styles.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    
-    <div class="singup">
-        <br>
-        <img id="login-img"
-        alt="Movie mania logo "
-        src="https://storage.googleapis.com/a1aa/image/FLSrj5GhDK0OxY0GwMyU3VjN1ZFh6LG_D20W6UZXp4s.jpg"
-        height="100"
-        width="100"/>
-        <h2>Sing up to Movie Mania</h2>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
+    <header class="fixed w-full bg-black bg-opacity-90 backdrop-blur-md z-50 top-0">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-red-600">Movie Mania</h1>
+            <a href="Index.html" class="nav-link hover:text-red-600 transition-colors duration-300">Back to Home</a>
+        </div>
+    </header>
 
-        <form>
-
-            <div class="inputdata">
-                <label for="name" id="sing-name">
-                    Name
-                </label>
-                <br>
-                <input type="text" id="name" placeholder="enter your name"  required/>
-                <br><br>
-                <label for="email" id="sing-email">
-                    Email
-                </label>
-                <br>
-                <input type="email" id="email" placeholder="enert your email" required/>
-                <br><br>
-                <label for="password" id="sing-password">
-                    Password
-                </label>
-                <br>
-                <input type="password" id="password" placeholder="enter your password" required/>
-                
-            </div>
-            
-            <!-- <input type="submit" value="Sing up" class="singupButten"/>  -->
-             <button type="submit" class="singupButten">Sign up</button>
-            
-        </form>
-
-        <p class="goToLogin">
-            already have an account?
-            <a href="myLogin.html" style="color: #076db0;">Log in</a>
-
-        </p>
-
+    <div class="container mx-auto px-4">
+        <div class="max-w-md mx-auto bg-black bg-opacity-50 backdrop-blur-md p-8 rounded-xl shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
+            <h2 class="text-3xl font-bold text-center mb-8 text-red-600">Sign Up</h2>
+            <form class="space-y-6">
+                <div class="relative">
+                    <input type="text" required
+                        class="w-full bg-transparent border-b-2 border-gray-600 px-4 py-2 text-white focus:outline-none focus:border-red-600 transition-colors duration-300"
+                        placeholder="Username">
+                </div>
+                <div class="relative">
+                    <input type="email" required
+                        class="w-full bg-transparent border-b-2 border-gray-600 px-4 py-2 text-white focus:outline-none focus:border-red-600 transition-colors duration-300"
+                        placeholder="Email">
+                </div>
+                <div class="relative">
+                    <input type="password" required
+                        class="w-full bg-transparent border-b-2 border-gray-600 px-4 py-2 text-white focus:outline-none focus:border-red-600 transition-colors duration-300"
+                        placeholder="Password">
+                </div>
+                <div class="relative">
+                    <input type="password" required
+                        class="w-full bg-transparent border-b-2 border-gray-600 px-4 py-2 text-white focus:outline-none focus:border-red-600 transition-colors duration-300"
+                        placeholder="Confirm Password">
+                </div>
+                <button type="submit"
+                    class="w-full bg-red-600 text-white py-3 rounded-md hover:bg-red-700 transform hover:scale-105 transition-all duration-300">
+                    Sign Up
+                </button>
+            </form>
+            <p class="text-center mt-6 text-gray-400">Already have an account? 
+                <a href="myLogin.html" class="text-red-600 hover:text-red-400 transition-colors duration-300">Login</a>
+            </p>
+        </div>
     </div>
-
 </body>
 </html>
