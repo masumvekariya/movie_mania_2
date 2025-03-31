@@ -1,160 +1,250 @@
-const path = require('path');
-const dotenv = require('dotenv');
-
-// Load environment variables
-try {
-    const envPath = path.resolve(process.cwd(), '.env');
-    console.log('Loading .env file from:', envPath);
-    const result = dotenv.config({ path: envPath });
-    
-    if (result.error) {
-        throw new Error(`Failed to load .env file: ${result.error.message}`);
-    }
-    
-    console.log('Environment variables loaded successfully');
-    console.log('Available environment variables:', Object.keys(process.env));
-} catch (error) {
-    console.error('Error during environment setup:', error.message);
-    process.exit(1);
-}
-
+require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
 const axios = require('axios');
+const path = require('path');
+const { auth } = require('express-openid-connect');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+
+// Auth0 configuration
+const config = {
+    authRequired: false,
+    auth0Logout: true,
+    secret: process.env.AUTH0_SECRET,
+    baseURL: process.env.AUTH0_BASE_URL,
+    clientID: process.env.AUTH0_CLIENT_ID,
+    issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL
+};
+
+// Auth0 middleware
+app.use(auth(config));
+
+// Set EJS as templating engine
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 // Middleware
-app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// TheMovieDB API configuration
-const TMDB_API_KEY = process.env.TMDB_API_KEY;
-const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-
-// Configure axios instance
-const tmdb = axios.create({
-    baseURL: TMDB_BASE_URL,
-    timeout: 10000,
-    params: {
-        api_key: TMDB_API_KEY
+// Middleware to check authentication status
+const checkAuthenticated = (req, res, next) => {
+    if (!req.oidc.isAuthenticated()) {
+        return res.redirect('/login');
     }
-});
+    next();
+};
 
-// Validate environment
-function validateEnvironment() {
-    console.log('Validating TMDB_API_KEY:', TMDB_API_KEY ? 'Present' : 'Missing');
-    if (!TMDB_API_KEY) {
-        throw new Error('TMDB API key is not configured. Please check your .env file.');
+// Auth routes
+app.get('/login', (req, res) => {
+    if (req.oidc.isAuthenticated()) {
+        return res.redirect('/');
     }
-    console.log('Environment validation successful');
-}
-
-// Initialize server
-async function initializeServer() {
-    try {
-        validateEnvironment();
-        
-        // Test API connection
-        const response = await tmdb.get('/configuration');
-        if (response.status === 200) {
-            console.log('Successfully connected to TMDB API');
-            
-            // Start server only after successful API connection
-            app.listen(PORT, () => {
-                console.log(`Server is running on port ${PORT}`);
-            });
+    res.oidc.login({
+        returnTo: '/',
+        authorizationParams: {
+            prompt: 'login'
         }
-    } catch (error) {
-        console.error('Server initialization failed:', error.message);
-        process.exit(1);
-    }
-}
+    });
+});
 
-// Validate API key
-if (!TMDB_API_KEY) {
-    console.error('TMDB API key is not configured. Please set TMDB_API_KEY in your .env file');
-    process.exit(1);
-}
+// Middleware to pass auth state to all views
+app.use((req, res, next) => {
+    res.locals.isAuthenticated = req.oidc.isAuthenticated();
+    res.locals.user = req.oidc.user;
+    next();
+});
 
-// API Routes
-app.get('/api/movies/trending', async (req, res) => {
+// Routes
+app.get('/', async (req, res) => {
     try {
-        const response = await tmdb.get('/trending/movie/week');
-        if (!response.data?.results) {
-            throw new Error('Invalid response from TMDB API');
+        const searchQuery = req.query.search;
+        let movies;
+
+        if (searchQuery) {
+            // Search for both movies and TV shows
+            const [movieResponse, tvResponse] = await Promise.all([
+                axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${process.env.TMDB_API_KEY}&query=${searchQuery}`),
+                axios.get(`https://api.themoviedb.org/3/search/tv?api_key=${process.env.TMDB_API_KEY}&query=${searchQuery}`)
+            ]);
+
+            // Combine and format results
+            const movieResults = movieResponse.data.results.map(item => ({
+                ...item,
+                media_type: 'movie'
+            }));
+
+            const tvResults = tvResponse.data.results.map(item => ({
+                ...item,
+                title: item.name,
+                release_date: item.first_air_date,
+                media_type: 'tv'
+            }));
+
+            movies = [...movieResults, ...tvResults]
+                .sort((a, b) => b.popularity - a.popularity)
+                .slice(0, 20);
+        } else {
+            // Fetch popular movies if no search query
+            const response = await axios.get(`https://api.themoviedb.org/3/movie/popular?api_key=${process.env.TMDB_API_KEY}`);
+            movies = response.data.results;
         }
-        res.json(response.data);
+
+        res.render('index', { movies, searchQuery: searchQuery || '' });
     } catch (error) {
-        console.error('Error fetching trending movies:', error.message);
-        res.status(error.response?.status || 500).json({
-            error: 'Failed to fetch trending movies',
-            message: error.message
-        });
+        console.error('Error fetching data:', error);
+        res.status(500).send('Error fetching data');
     }
 });
 
-app.get('/api/movies/search', async (req, res) => {
-    const { query } = req.query;
-    if (!query) {
-        return res.status(400).json({ error: 'Search query is required' });
-    }
+// Profile route
+app.get('/profile', checkAuthenticated, (req, res) => {
+    res.render('profile');
+});
+
+// Movies route
+app.get('/movies', async (req, res) => {
     try {
-        const response = await tmdb.get('/search/movie', {
-            params: { query: query }
-        });
-        if (!response.data?.results) {
-            throw new Error('Invalid response from TMDB API');
+        const page = parseInt(req.query.page) || 1;
+        const searchQuery = req.query.search;
+        const sort = req.query.sort || 'popularity';
+
+        let endpoint = searchQuery
+            ? `search/movie?query=${searchQuery}&page=${page}`
+            : `movie/popular?page=${page}`;
+
+        if (sort === 'rating') {
+            endpoint = `movie/top_rated?page=${page}`;
+        } else if (sort === 'release') {
+            endpoint = `movie/now_playing?page=${page}`;
         }
-        res.json(response.data);
+
+        const response = await axios.get(`https://api.themoviedb.org/3/${endpoint}&api_key=${process.env.TMDB_API_KEY}`);
+        const movies = response.data.results;
+
+        res.render('movies', { movies, currentPage: page });
     } catch (error) {
-        console.error('Error searching movies:', error.message);
-        res.status(error.response?.status || 500).json({
-            error: 'Failed to search movies',
-            message: error.message
-        });
+        console.error('Error fetching movies:', error);
+        res.status(500).send('Error fetching movies');
     }
 });
 
-app.get('/api/movies/:id', async (req, res) => {
-    const { id } = req.params;
+// TV Series route
+app.get('/tv', async (req, res) => {
     try {
-        const response = await tmdb.get(`/movie/${id}`);
-        if (!response.data) {
-            throw new Error('Invalid response from TMDB API');
+        const page = parseInt(req.query.page) || 1;
+        const searchQuery = req.query.search;
+        const sort = req.query.sort || 'popularity';
+
+        let endpoint = searchQuery
+            ? `search/tv?query=${searchQuery}&page=${page}`
+            : `tv/popular?page=${page}`;
+
+        if (sort === 'rating') {
+            endpoint = `tv/top_rated?page=${page}`;
+        } else if (sort === 'first_air_date') {
+            endpoint = `tv/on_the_air?page=${page}`;
         }
-        res.json(response.data);
+
+        const response = await axios.get(`https://api.themoviedb.org/3/${endpoint}&api_key=${process.env.TMDB_API_KEY}`);
+        const shows = response.data.results;
+
+        res.render('tv', { shows, currentPage: page });
     } catch (error) {
-        console.error('Error fetching movie details:', error.message);
-        res.status(error.response?.status || 500).json({
-            error: 'Failed to fetch movie details',
-            message: error.message
-        });
+        console.error('Error fetching TV shows:', error);
+        res.status(500).send('Error fetching TV shows');
     }
 });
 
-app.get('/api/tv/popular', async (req, res) => {
+// Top Rated route
+app.get('/top-rated', async (req, res) => {
     try {
-        const response = await tmdb.get('/tv/popular');
-        if (!response.data?.results) {
-            throw new Error('Invalid response from TMDB API');
+        const page = parseInt(req.query.page) || 1;
+        const contentType = req.query.type || 'all';
+        const searchQuery = req.query.search;
+
+        let content = [];
+
+        if (contentType === 'movies' || contentType === 'all') {
+            const movieResponse = await axios.get(
+                `https://api.themoviedb.org/3/movie/top_rated?api_key=${process.env.TMDB_API_KEY}&page=${page}`
+            );
+            content = [...content, ...movieResponse.data.results.map(item => ({ ...item, media_type: 'movie' }))];
         }
-        res.json(response.data);
+
+        if (contentType === 'tv' || contentType === 'all') {
+            const tvResponse = await axios.get(
+                `https://api.themoviedb.org/3/tv/top_rated?api_key=${process.env.TMDB_API_KEY}&page=${page}`
+            );
+            content = [...content, ...tvResponse.data.results.map(item => ({
+                ...item,
+                title: item.name,
+                release_date: item.first_air_date,
+                media_type: 'tv'
+            }))];
+        }
+
+        if (searchQuery) {
+            content = content.filter(item =>
+                (item.title || item.name).toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
+
+        content.sort((a, b) => b.vote_average - a.vote_average);
+
+        res.render('top-rated', { content, currentPage: page, contentType });
     } catch (error) {
-        console.error('Error fetching popular TV series:', error.message);
-        res.status(error.response?.status || 500).json({
-            error: 'Failed to fetch popular TV series',
-            message: error.message
-        });
+        console.error('Error fetching top rated content:', error);
+        res.status(500).send('Error fetching top rated content');
     }
 });
 
-// Serve static files
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// Upcoming route
+app.get('/upcoming', async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const timeframe = req.query.timeframe || 'month';
+        const searchQuery = req.query.search;
+
+        let response = await axios.get(
+            `https://api.themoviedb.org/3/movie/upcoming?api_key=${process.env.TMDB_API_KEY}&page=${page}`
+        );
+
+        let movies = response.data.results;
+
+        // Filter movies based on timeframe
+        const now = new Date();
+        const filterDate = new Date();
+        if (timeframe === 'week') {
+            filterDate.setDate(filterDate.getDate() + 7);
+        } else if (timeframe === 'month') {
+            filterDate.setMonth(filterDate.getMonth() + 1);
+        } else { // year
+            filterDate.setFullYear(filterDate.getFullYear() + 1);
+        }
+
+        movies = movies.filter(movie => {
+            const releaseDate = new Date(movie.release_date);
+            return releaseDate > now && releaseDate <= filterDate;
+        });
+
+        if (searchQuery) {
+            movies = movies.filter(movie =>
+                movie.title.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
+
+        movies.sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
+
+        res.render('upcoming', { movies, currentPage: page, timeframe });
+    } catch (error) {
+        console.error('Error fetching upcoming movies:', error);
+        res.status(500).send('Error fetching upcoming movies');
+    }
 });
 
-// Initialize the server
-initializeServer();
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
